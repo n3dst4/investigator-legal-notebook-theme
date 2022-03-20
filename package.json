@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@league-of-foundry-developers/foundry-vtt-types": "^9.255.0",
-    "@tsconfig/recommended": "^1.0.1"
+    "@tsconfig/recommended": "^1.0.1",
+    "gulp-typescript": "^6.0.0-alpha.1"
   }
 }

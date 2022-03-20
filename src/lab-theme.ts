@@ -1,8 +1,8 @@
-import { ThemeSeedV1, css } from "investigator-fvtt-types";
+import { ThemeSeedV1, CssFn } from "investigator-fvtt-types";
 
 const assetPath = "modules/investigator-fvtt-theme-lab-notebook/assets"
 
-const makeLabTheme = (css: css): ThemeSeedV1 =>  {
+const makeLabTheme = (css: CssFn): ThemeSeedV1 =>  {
   return {
     schemaVersion: "v1",
     displayName: "Lab Notebook",
