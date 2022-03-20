@@ -16,16 +16,6 @@ const argv = yargs.argv;
 const srcPath = "src";
 const manifestPath = path.join(srcPath, "system.json");
 
-function getConfig () {
-  const configPath = path.resolve(process.cwd(), "foundryconfig.json");
-  let config;
-  if (fs.existsSync(configPath)) {
-    config = fs.readJSONSync(configPath);
-    return config;
-  } else {
-    throw new Error("foundryconfig.json not found. Make a copy of foundryconfig_template.json and customise it to your needs.");
-  }
-}
 
 function getManifest () {
   const manifest = fs.readJSONSync(manifestPath);
@@ -41,9 +31,7 @@ function getManifest () {
  */
 var tsProject = ts.createProject('tsconfig.json');
 function buildTS () {
-  var tsResult = gulp.src("src/**/*.ts") // or tsProject.src()
-    .pipe(tsProject());
-
+  const tsResult = tsProject.src().pipe(tsProject());
   return tsResult.js.pipe(gulp.dest('build'));
 };
 
@@ -65,10 +53,10 @@ async function copyFiles () {
   ];
   try {
     for (const staticPath of staticPaths) {
-      if (fs.existsSync(path.join("src", staticPath))) {
+      if (fs.existsSync(staticPath)) {
         await fs.copy(
-          path.join("src", staticPath),
-          path.join("dist", staticPath),
+          staticPath,
+          path.join("build", staticPath),
         );
       }
     }
@@ -83,8 +71,7 @@ async function copyFiles () {
 /**
  * Watch for changes for each build step
  */
-function watch () {
-  gulp.watch("src/**/*.less", { ignoreInitial: false }, buildLess);
+export function watch () {
   gulp.watch(
     ["src/assets", "src/fonts", "src/lang", "src/templates", "src/*.json", "src/babele-es"],
     { ignoreInitial: false },
@@ -100,7 +87,7 @@ function watch () {
  * Remove built files from `dist` folder
  * while ignoring source files
  */
-function clean () {
+export function clean () {
   const distPath = path.join(__dirname, "build");
 
   return new Promise((resolve, reject) => {
