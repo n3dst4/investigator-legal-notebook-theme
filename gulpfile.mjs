@@ -1,16 +1,17 @@
-const gulp = require("gulp");
-const fs = require("fs-extra");
-const path = require("path");
-const chalk = require("chalk");
-const archiver = require("archiver");
-const stringify = require("json-stringify-pretty-compact");
-const less = require("gulp-less");
-const git = require("gulp-git");
-const argv = require("yargs").argv;
-const webpack = require("webpack");
-const webpackConfig = require("./webpack.config");
-const rimraf = require("rimraf");
-var ts = require('gulp-typescript');
+import chalk from "chalk";
+import gulp from "gulp";
+import fs from "fs-extra";
+import path from "path";
+import archiver from "archiver";
+import yargs from "yargs";
+import rimraf from "rimraf";
+import ts from 'gulp-typescript';
+import {fileURLToPath} from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const argv = yargs.argv;
 
 const srcPath = "src";
 const manifestPath = path.join(srcPath, "system.json");
@@ -38,21 +39,9 @@ function getManifest () {
 /**
  * Build TypeScript
  */
-function buildTSX () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackConfig, (err, stats) => {
-      if (err || stats.hasErrors()) {
-        reject(err || stats.toString());
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
 var tsProject = ts.createProject('tsconfig.json');
 function buildTS () {
-  var tsResult = gulp.src("lib/**/*.ts") // or tsProject.src()
+  var tsResult = gulp.src("src/**/*.ts") // or tsProject.src()
     .pipe(tsProject());
 
   return tsResult.js.pipe(gulp.dest('build'));
@@ -95,17 +84,6 @@ async function copyFiles () {
  * Watch for changes for each build step
  */
 function watch () {
-  webpack(webpackConfig).watch({
-    aggregateTimeout: 300,
-    poll: undefined,
-  }, (err, stats) => {
-    console.log(stats.toString({
-      colors: true,
-    }));
-    if (err) {
-      console.error(err);
-    }
-  });
   gulp.watch("src/**/*.less", { ignoreInitial: false }, buildLess);
   gulp.watch(
     ["src/assets", "src/fonts", "src/lang", "src/templates", "src/*.json", "src/babele-es"],
@@ -257,115 +235,6 @@ async function bundlePackage () {
   });
 }
 
-/*********************/
-/* PACKAGE */
-/*********************/
-
-/**
- * Update version and URLs in the manifest JSON
- */
-function updateManifest (cb) {
-  const packageJson = fs.readJSONSync("package.json");
-  const config = getConfig();
-  const manifest = getManifest();
-  const rawURL = config.rawURL;
-  const repoURL = config.repository;
-  const manifestRoot = manifest.root;
-
-  if (!config) cb(Error(chalk.red("foundryconfig.json not found")));
-  if (!manifest) cb(Error(chalk.red("Manifest JSON not found")));
-  if (!rawURL || !repoURL) {
-    cb(
-      Error(
-        chalk.red(
-          "Repository URLs not configured in foundryconfig.json",
-        ),
-      ),
-    );
-  }
-
-  try {
-    const version = argv.update || argv.u;
-
-    /* Update version */
-
-    const versionMatch = /^(\d{1,}).(\d{1,}).(\d{1,})$/;
-    const currentVersion = manifest.file.version;
-    let targetVersion = "";
-
-    if (!version) {
-      cb(Error("Missing version number"));
-    }
-
-    if (versionMatch.test(version)) {
-      targetVersion = version;
-    } else {
-      targetVersion = currentVersion.replace(
-        versionMatch,
-        (substring, major, minor, patch) => {
-          console.log(
-            substring,
-            Number(major) + 1,
-            Number(minor) + 1,
-            Number(patch) + 1,
-          );
-          if (version === "major") {
-            return `${Number(major) + 1}.0.0`;
-          } else if (version === "minor") {
-            return `${major}.${Number(minor) + 1}.0`;
-          } else if (version === "patch") {
-            return `${major}.${minor}.${Number(patch) + 1}`;
-          } else {
-            return "";
-          }
-        },
-      );
-    }
-
-    if (targetVersion === "") {
-      return cb(Error(chalk.red("Error: Incorrect version arguments.")));
-    }
-
-    if (targetVersion === currentVersion) {
-      return cb(
-        Error(
-          chalk.red(
-            "Error: Target version is identical to current version.",
-          ),
-        ),
-      );
-    }
-    console.log(`Updating version number to '${targetVersion}'`);
-
-    packageJson.version = targetVersion;
-    manifest.file.version = targetVersion;
-
-    /* Update URLs */
-
-    const result = `${rawURL}/v${manifest.file.version}/package/${manifest.file.name}-v${manifest.file.version}.zip`;
-
-    manifest.file.url = repoURL;
-    manifest.file.manifest = `${rawURL}/master/${manifestRoot}/${manifest.name}`;
-    manifest.file.download = result;
-
-    const prettyProjectJson = stringify(manifest.file, {
-      maxLength: 35,
-      indent: "\t",
-    });
-
-    fs.writeJSONSync("package.json", packageJson, { spaces: "\t" });
-    fs.writeFileSync(
-      path.join(manifest.root, manifest.name),
-      prettyProjectJson,
-      "utf8",
-    );
-
-    return cb();
-  } catch (err) {
-    cb(err);
-  }
-}
-
 
 function setProd () {
   process.env.NODE_ENV = "production";
@@ -375,9 +244,6 @@ function setProd () {
 
 const buildAll = gulp.parallel(buildTS, copyFiles);
 
-exports.build = gulp.series(clean, buildAll);
-exports.watch = watch;
-exports.clean = clean;
-exports.link = link;
-exports.unlink = unlink;
-exports.package = gulp.series([setProd, clean, buildAll, bundlePackage]);
+export const build = gulp.series(clean, buildAll);
+export default build;
+export const packidge = gulp.series([setProd, clean, buildAll, bundlePackage]);
