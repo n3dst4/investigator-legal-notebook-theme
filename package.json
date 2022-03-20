@@ -1,0 +1,20 @@
+{
+  "name": "investigator-fvtt-theme-lab-notebook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "investigator-fvtt-types": "gitlab:n3dst4/investigator-fvtt-types",
+    "typescript": "^4.6.2"
+  },
+  "devDependencies": {
+    "@league-of-foundry-developers/foundry-vtt-types": "^9.255.0",
+    "@tsconfig/recommended": "^1.0.1"
+  }
+}
