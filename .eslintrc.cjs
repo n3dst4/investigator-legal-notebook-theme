@@ -1,17 +1,24 @@
 module.exports = {
   root: true,
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-  parser: "@typescript-eslint/parser",
-  parserOptions: { project: ["./tsconfig.json"] },
-  plugins: ["@typescript-eslint"],
-  rules: {
-    "@typescript-eslint/strict-boolean-expressions": [
-      2,
-      {
-        allowString: false,
-        allowNumber: false,
-      },
-    ],
+  env: {
+    browser: true,
+    es2021: true,
+    node: true
   },
-  ignorePatterns: ["src/**/*.test.ts", "src/frontend/generated/*"],
+  extends: ["eslint:recommended"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
+
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'], // Your TypeScript files extension
+      extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+      ],
+      parserOptions: {
+        project: ['./tsconfig.json'],
+      },
+    },
+  ],  
 };

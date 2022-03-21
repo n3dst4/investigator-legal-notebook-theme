@@ -53,7 +53,7 @@ export function buildCode () {
   var tsProject = ts.createProject('tsconfig.json');
   const tsResult = tsProject.src().pipe(tsProject());
   return tsResult.js.pipe(gulp.dest('build'));
-};
+}
 
 
 /**
