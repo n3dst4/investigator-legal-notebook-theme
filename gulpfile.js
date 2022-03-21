@@ -33,7 +33,7 @@ const linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
  * Remove built files from `build` folder
  * while ignoring source files
  */
- export function clean () {
+export function clean () {
   const distPath = path.join(__dirname, buildFolder);
   return new Promise((resolve, reject) => {
     rimraf(distPath, (err) => {
