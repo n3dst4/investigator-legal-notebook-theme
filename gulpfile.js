@@ -106,7 +106,7 @@ export async function link () {
     console.log(
       chalk.green(`Linking dist to ${chalk.blueBright(linkDir)}`),
     );
-    return fs.symlink(path.resolve("./dist"), linkDir);
+    return fs.symlink(path.resolve(buildFolder), linkDir);
   }
 }
 
