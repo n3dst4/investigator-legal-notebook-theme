@@ -68,4 +68,5 @@ const makeLabTheme = (css: CssFn): ThemeSeedV1 =>  {
   };
 }
 
+console.log("[Lab Theme] initializing");
 CONFIG.Investigator?.installTheme("Lab", makeLabTheme);
