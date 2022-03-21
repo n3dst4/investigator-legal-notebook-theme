@@ -8,88 +8,28 @@ import rimraf from "rimraf";
 import ts from 'gulp-typescript';
 import {fileURLToPath} from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+////////////////////////////////////////////////////////////////////////////////
+// Config
 
+const manifestPath = "module.json"
+const buildFolder = "build";
+const staticPaths = [
+  manifestPath,
+];
+
+////////////////////////////////////////////////////////////////////////////////
+// Startup
+const manifest = JSON.parse((await fs.readFile(manifestPath)).toString());
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const argv = yargs.argv;
 
-const srcPath = "src";
-const manifestPath = path.join(srcPath, "system.json");
-
-
-function getManifest () {
-  const manifest = fs.readJSONSync(manifestPath);
-  return manifest;
-}
-
-/********************/
-/* BUILD */
-/********************/
 
 /**
- * Build TypeScript
- */
-var tsProject = ts.createProject('tsconfig.json');
-function buildTS () {
-  const tsResult = tsProject.src().pipe(tsProject());
-  return tsResult.js.pipe(gulp.dest('build'));
-};
-
-
-/**
- * Copy static files
- */
-async function copyFiles () {
-  const staticPaths = [
-    "lang",
-    "fonts",
-    "assets",
-    "templates",
-    "module.json",
-    "system.json",
-    "template.json",
-    "packs",
-    "babele-es",
-  ];
-  try {
-    for (const staticPath of staticPaths) {
-      if (fs.existsSync(staticPath)) {
-        await fs.copy(
-          staticPath,
-          path.join("build", staticPath),
-        );
-      }
-    }
-    return Promise.resolve();
-  } catch (err) {
-    Promise.reject(err);
-  }
-}
-
-
-
-/**
- * Watch for changes for each build step
- */
-export function watch () {
-  gulp.watch(
-    ["src/assets", "src/fonts", "src/lang", "src/templates", "src/*.json", "src/babele-es"],
-    { ignoreInitial: false },
-    copyFiles,
-  );
-}
-
-/********************/
-/* CLEAN */
-/********************/
-
-/**
- * Remove built files from `dist` folder
+ * Remove built files from `build` folder
  * while ignoring source files
  */
-export function clean () {
-  const distPath = path.join(__dirname, "build");
-
+ export function clean () {
+  const distPath = path.join(__dirname, buildFolder);
   return new Promise((resolve, reject) => {
     rimraf(distPath, (err) => {
       if (err) {
@@ -101,6 +41,45 @@ export function clean () {
   });
 }
 
+/**
+ * Build TypeScript
+ */
+export function buildCode () {
+  var tsProject = ts.createProject('tsconfig.json');
+  const tsResult = tsProject.src().pipe(tsProject());
+  return tsResult.js.pipe(gulp.dest('build'));
+};
+
+
+/**
+ * Copy static files
+ */
+export async function copyFiles () {
+  for (const staticPath of staticPaths) {
+    await fs.copy(
+      staticPath,
+      path.join("build", staticPath),
+    );
+  }
+}
+
+
+/**
+ * Watch for changes for each build step
+ */
+export function watch () {
+  gulp.watch(
+    staticPaths,
+    { ignoreInitial: false },
+    copyFiles,
+  );
+  gulp.watch(
+    ["src", "tsconfig.json"],
+    { ignoreInitial: false },
+    buildCode,
+  );
+}
+
 /********************/
 /* LINK */
 /********************/
@@ -108,48 +87,20 @@ export function clean () {
 /**
  * Get the path to link to `dist`
  */
-function getLinkDir () {
-  const name = require("./src/system.json").name;
-  const config = fs.readJSONSync("foundryconfig.json");
-  let destDir;
-
-  // work out if we're linking to systems or modules
-  if (
-    fs.existsSync(path.resolve(".", "dist", "module.json")) ||
-    fs.existsSync(path.resolve(".", "src", "module.json"))
-  ) {
-    destDir = "modules";
-  } else if (
-    fs.existsSync(path.resolve(".", "dist", "system.json")) ||
-    fs.existsSync(path.resolve(".", "src", "system.json"))
-  ) {
-    destDir = "systems";
-  } else {
-    throw Error(
-      `Could not find ${chalk.blueBright(
-        "module.json",
-      )} or ${chalk.blueBright("system.json")}`,
-    );
+async function getLinkDir () {
+  const config = await fs.readJSON("foundryconfig.json");
+  if (!config.dataPath) {
+    throw new Error("No dataPath found in foundryConfig.json");
   }
-
-  let linkDir;
-  if (config.dataPath) {
-    if (!fs.existsSync(path.join(config.dataPath, "Data"))) {
-      throw Error("User Data path invalid, no Data directory found");
-    }
-    linkDir = path.join(config.dataPath, "Data", destDir, name);
-  } else {
-    throw Error("No User Data path defined in foundryconfig.json");
-  }
-
+  const linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
   return linkDir;
 }
 
 /**
  * Remove the link to foundrydata
  */
-function unlink () {
-  const linkDir = getLinkDir();
+export async function unlink () {
+  const linkDir = await getLinkDir();
   console.log(
     chalk.yellow(`Removing build link from ${chalk.blueBright(linkDir)}`),
   );
@@ -159,8 +110,8 @@ function unlink () {
 /**
  * Link build to foundrydata
  */
-function link () {
-  const linkDir = getLinkDir();
+export async function link () {
+  const linkDir = await getLinkDir();
   if (argv.clean || argv.c) {
     return unlink();
   } else if (!fs.existsSync(linkDir)) {
@@ -229,7 +180,7 @@ function setProd () {
 }
 
 
-const buildAll = gulp.parallel(buildTS, copyFiles);
+const buildAll = gulp.parallel(buildCode, copyFiles);
 
 export const build = gulp.series(clean, buildAll);
 export default build;
