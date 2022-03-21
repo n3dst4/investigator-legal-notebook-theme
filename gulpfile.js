@@ -22,6 +22,11 @@ const staticPaths = [
 const manifest = JSON.parse((await fs.readFile(manifestPath)).toString());
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const argv = yargs.argv;
+const config = await fs.readJSON("foundryconfig.json");
+if (!config.dataPath) {
+  throw new Error("No dataPath found in foundryConfig.json");
+}
+const linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
 
 
 /**
@@ -80,27 +85,11 @@ export function watch () {
   );
 }
 
-/********************/
-/* LINK */
-/********************/
-
-/**
- * Get the path to link to `dist`
- */
-async function getLinkDir () {
-  const config = await fs.readJSON("foundryconfig.json");
-  if (!config.dataPath) {
-    throw new Error("No dataPath found in foundryConfig.json");
-  }
-  const linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
-  return linkDir;
-}
 
 /**
  * Remove the link to foundrydata
  */
 export async function unlink () {
-  const linkDir = await getLinkDir();
   console.log(
     chalk.yellow(`Removing build link from ${chalk.blueBright(linkDir)}`),
   );
@@ -111,7 +100,6 @@ export async function unlink () {
  * Link build to foundrydata
  */
 export async function link () {
-  const linkDir = await getLinkDir();
   if (argv.clean || argv.c) {
     return unlink();
   } else if (!fs.existsSync(linkDir)) {
@@ -122,33 +110,19 @@ export async function link () {
   }
 }
 
-/*********************/
-/* PACKAGE */
-/*********************/
 
 /**
  * Package build
  */
-async function bundlePackage () {
-  const manifest = getManifest();
-
+export async function bundlePackage () {
   return new Promise((resolve, reject) => {
     try {
-    // Remove the package dir without doing anything else
-      if (argv.clean || argv.c) {
-        console.log(chalk.yellow("Removing all packaged files"));
-        fs.removeSync("package");
-        return;
-      }
-
       // Ensure there is a directory to hold all the packaged versions
       fs.ensureDirSync("package");
-
       // Initialize the zip file
-      const zipName = `${manifest.file.name}-v${manifest.file.version}.zip`;
+      const zipName = `${manifest.name}-v${manifest.version}.zip`;
       const zipFile = fs.createWriteStream(path.join("package", zipName));
       const zip = archiver("zip", { zlib: { level: 9 } });
-
       zipFile.on("close", () => {
         console.log(chalk.green(zip.pointer() + " total bytes"));
         console.log(
@@ -156,16 +130,12 @@ async function bundlePackage () {
         );
         return resolve();
       });
-
       zip.on("error", (err) => {
         throw err;
       });
-
       zip.pipe(zipFile);
-
       // Add the directory with the final code
-      zip.directory("build/", manifest.file.name);
-
+      zip.directory("build/", manifest.name);
       zip.finalize();
     } catch (err) {
       return reject(err);
@@ -183,5 +153,5 @@ function setProd () {
 const buildAll = gulp.parallel(buildCode, copyFiles);
 
 export const build = gulp.series(clean, buildAll);
-export default build;
 export const packidge = gulp.series([setProd, clean, buildAll, bundlePackage]);
+export default build;
