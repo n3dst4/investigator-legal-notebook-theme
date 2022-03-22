@@ -15,6 +15,7 @@ const manifestPath = "module.json"
 const buildFolder = "build";
 const staticPaths = [
   manifestPath,
+  "assets"
 ];
 
 ////////////////////////////////////////////////////////////////////////////////
