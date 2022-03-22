@@ -20,6 +20,7 @@
     "typescript": "^4.6.2"
   },
   "devDependencies": {
+    "@league-of-foundry-developers/foundry-vtt-types": "^9.255.2",
     "@tsconfig/recommended": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
