@@ -1,4 +1,4 @@
-import { ThemeSeedV1 } from "investigator-fvtt-types";
+import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 
 const assetPath = "modules/investigator-fvtt-theme-lab-notebook/assets"
 

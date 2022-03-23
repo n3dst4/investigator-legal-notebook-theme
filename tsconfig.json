@@ -8,7 +8,7 @@
     "types": [
       // "react",
       "@league-of-foundry-developers/foundry-vtt-types",
-      "investigator-fvtt-types"
+      "@lumphammer/investigator-fvtt-types"
     ],
     "lib": ["DOM", "ES2021"]
   }
