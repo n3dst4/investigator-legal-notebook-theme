@@ -6,7 +6,7 @@ const seed: ThemeSeedV1 = {
     schemaVersion: "v1",
     displayName: "Lab Notebook",
     global: `
-      @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand+SC&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap');
     `,
     largeSheetRootStyle: {
@@ -17,12 +17,20 @@ const seed: ThemeSeedV1 = {
     // smallSheetRootStyle: {
     //   backgroundImage: `url(systems/${systemName}/assets/wallpaper/scott-webb-UjupleczBOY-unsplash.webp)`,
     // },
-    bodyFont: "16px 'Patrick Hand SC', sans-serif",
-    displayFont: "normal small-caps normal 1.1em 'Fredericka the Great', serif",
+    bodyFont: "16px 'Architects Daughter', sans-serif",
+    displayFont: "normal small-caps normal 1.1em 'Architects Daughter', serif",
     logo: {
       fontScaleFactor: 14,
       frontTextElementStyle: {
-        color: "#007",
+        color: "transparent",
+        backgroundImage: `linear-gradient(
+          to right,
+          hsl(240deg 100% 23%) 0%,
+          hsl(207deg 100% 28%) 50%,
+          hsl(180deg 100% 23%) 100%
+        )`,
+        backgroundClip: "text",
+
         // textShadow: [
         //   "0.03em 0.03em 0px #fff",
         //   // "0.06em 0.06em 0px #000",
@@ -31,7 +39,13 @@ const seed: ThemeSeedV1 = {
         // ].join(", "),
       },
       rearTextElementStyle: {
-        display: "none",
+        // display: "none",
+        textShadow: [
+          "0.03em 0.03em 0px #fff",
+          // "0.06em 0.06em 0px #000",
+          "-0.03em -0.03em 0px #fff",
+          // "-0.06em -0.06em 0px #000",
+        ].join(", "),
       },
       textElementsStyle: {
         // transform: "scale(0.6)",
