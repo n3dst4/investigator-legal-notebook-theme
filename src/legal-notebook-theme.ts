@@ -4,7 +4,7 @@ const assetPath = "modules/investigator-fvtt-theme-legal-notebook/assets"
 
 const seed: ThemeSeedV1 = {
     schemaVersion: "v1",
-    displayName: "Lab Notebook",
+    displayName: "Legal Notebook",
     global: `
       @import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
     `,
