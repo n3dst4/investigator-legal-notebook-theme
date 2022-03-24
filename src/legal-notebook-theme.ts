@@ -10,7 +10,7 @@ const seed: ThemeSeedV1 = {
     `,
     largeSheetRootStyle: {
       backgroundImage: `
-      linear-gradient(to bottom right, #ff97 0%, #ff57 100%),
+      linear-gradient(to bottom right, #ff9 0%, #ff5 100%),
         url(${assetPath}/stil-wtqe5nd5MYk-unsplash.webp)
       `,
       backgroundPosition: "center",
