@@ -21,11 +21,15 @@ const staticPaths = [
 // Startup
 const manifest = JSON.parse((await fs.readFile(manifestPath)).toString());
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const config = await fs.readJSON("foundryconfig.json");
-if (!config.dataPath) {
-  throw new Error("No dataPath found in foundryConfig.json");
+let config, linkDir;
+try {
+  config = await fs.readJSON("foundryconfig.json");
+} catch (e) {
+  console.log(chalk.magenta("foundryconfig.json not found - assuming CI"));
 }
-const linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
+if (config.dataPath) {
+  linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
+}
 
 
 /**
@@ -89,6 +93,9 @@ export function watch () {
  * Remove the link to foundrydata
  */
 export async function unlink () {
+  if (!linkDir) {
+    throw new Error("linkDir not set");
+  }
   console.log(
     chalk.yellow(`Removing build link from ${chalk.blueBright(linkDir)}`),
   );
@@ -99,6 +106,9 @@ export async function unlink () {
  * Link build to foundrydata
  */
 export async function link () {
+  if (!linkDir) {
+    throw new Error("linkDir not set");
+  }
   if (!fs.existsSync(linkDir)) {
     console.log(
       chalk.green(`Linking dist to ${chalk.blueBright(linkDir)}`),
