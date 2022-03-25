@@ -142,12 +142,13 @@ export async function setManifestFromCI () {
   }
   
   const version = tag ? stripInitialv(tag) : manifest.version;
-
-  console.log(version);
+  
   manifest.version = version
   manifest.url = `https://gitlab.com/${path}`;
   manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${version}/raw/package/${manifest.name}-v1.0.0.zip?job=${jobName}`;
   manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${version}/raw/system.json?job=${jobName}`;
+
+  console.log({tag, path, jobName, version, manifest});
   
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   return Promise.resolve();
