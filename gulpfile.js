@@ -27,7 +27,7 @@ try {
 } catch (e) {
   console.log(chalk.magenta("foundryconfig.json not found - assuming CI"));
 }
-if (config.dataPath) {
+if (config?.dataPath) {
   linkDir = path.join(config.dataPath, "Data", "modules", manifest.name);
 }
 
