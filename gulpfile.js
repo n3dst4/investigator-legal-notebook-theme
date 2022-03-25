@@ -3,7 +3,6 @@ import gulp from "gulp";
 import fs from "fs-extra";
 import path from "path";
 import archiver from "archiver";
-import yargs from "yargs";
 import rimraf from "rimraf";
 import ts from 'gulp-typescript';
 import {fileURLToPath} from "url";
@@ -22,7 +21,6 @@ const staticPaths = [
 // Startup
 const manifest = JSON.parse((await fs.readFile(manifestPath)).toString());
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const argv = yargs.argv;
 const config = await fs.readJSON("foundryconfig.json");
 if (!config.dataPath) {
   throw new Error("No dataPath found in foundryConfig.json");
@@ -101,14 +99,46 @@ export async function unlink () {
  * Link build to foundrydata
  */
 export async function link () {
-  if (argv.clean || argv.c) {
-    return unlink();
-  } else if (!fs.existsSync(linkDir)) {
+  if (!fs.existsSync(linkDir)) {
     console.log(
       chalk.green(`Linking dist to ${chalk.blueBright(linkDir)}`),
     );
     return fs.symlink(path.resolve(buildFolder), linkDir);
+  } else {
+    console.log(
+      chalk.magenta(`${chalk.blueBright(linkDir)} already exists`),
+    );
   }
+}
+
+const stripInitialv = (subject) => (
+  subject.replace(
+    /^v(\d+\.\d+\.\d+.*)/, 
+    (_, [match]) => match
+  )
+);
+
+/**
+ * Update the manifest in CI
+ */
+export function setManifestFromCI () {
+  const tag = process.env.CI_COMMIT_TAG;
+  const path = process.env.CI_PROJECT_PATH;
+  const jobName = process.env.CI_JOB_NAME;
+
+  if (!path) {
+    console.log(chalk.green("Not on CI push, leaving manfest as-is"));
+    return;
+  }
+  
+  const version = tag ? stripInitialv(tag) : manifest.version;
+
+  manifest.version = version
+  manifest.url = `https://gitlab.com/${path}`;
+  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${version}/raw/package/${manifest.name}-v1.0.0.zip?job=${jobName}`;
+  manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${version}/raw/system.json?job=${jobName}`;
+  
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 }
 
 
