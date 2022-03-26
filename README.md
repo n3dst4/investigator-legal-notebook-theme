@@ -7,10 +7,19 @@ Although this is a fully usable theme, the main intent here is to be an example 
 <img src="./assets/legal_screenshot.webp" style="width: 36em"/>
 
 
+## How to install
+
+You can install using the following manifest URL. From the admin page of your Foundry VTT server, go to "Add-on Modules", then "Install Module", and paste this into the "Manifest URL" box and click "Install".
+
+```
+https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt/-/raw/main/module.json
+```
+
+
+
 ## Adding INVESTIGATOR themes in a module
 
-**One day (hopefully not too long) we will have a way for users to just chuck some JSON into their data folder and have it be interpreted as a theme.** For now what we have is an API, which can be addressed by module authors to create new themes.
-
+See the [INVESTIGATOR Wiki page for information about how to add INVESTIGATOR themes from third-party code](https://gitlab.com/n3dst4/investigator-fvtt/-/wikis/Adding-new-themes-from-third-party-code).
 
 ## Credits
 
