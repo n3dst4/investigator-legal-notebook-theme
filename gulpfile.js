@@ -149,7 +149,7 @@ export async function setManifestFromCI () {
   manifest.url = `https://gitlab.com/${path}`;
   manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/package/${manifest.name}-v1.0.0.zip?job=${jobName}`;
   //                   https://gitlab.com/asacolips-projects/foundry-mods/archmage/-/raw/master/system.json
-  manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/system.json?job=${jobName}`;
+  manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/module.json?job=${jobName}`;
 
   console.log({tag, path, jobName, version, manifest});
   
