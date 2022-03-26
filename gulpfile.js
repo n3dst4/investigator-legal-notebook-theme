@@ -123,7 +123,7 @@ export async function link () {
 
 const stripInitialv = (subject) => (
   subject.replace(
-    /^v(\d+\.\d+\.\d+.*)/, 
+    /^v(\d+\.\d+\.\d+.*)/i, 
     (_, ...[match]) => match
   )
 );
@@ -138,7 +138,7 @@ export async function setManifestFromCI () {
   const jobName = process.env.CI_JOB_NAME;
 
   if (!path) {
-    console.log(chalk.green("Not on CI push, leaving manfest as-is"));
+    console.log(chalk.green("Not on CI, leaving manfest as-is"));
     return;
   }
   
@@ -147,14 +147,12 @@ export async function setManifestFromCI () {
   
   manifest.version = version
   manifest.url = `https://gitlab.com/${path}`;
-  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/package/${manifest.name}-v${version}.zip?job=${jobName}`;
+  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/package/${manifest.name}.zip?job=${jobName}`;
   manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/${manifestPath}?job=${jobName}`;
-  //                   https://gitlab.com/asacolips-projects/foundry-mods/archmage/-/raw/master/system.json
 
   console.log({tag, path, jobName, version, manifest});
   
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  return Promise.resolve();
 }
 
 
@@ -167,7 +165,7 @@ export async function bundlePackage () {
       // Ensure there is a directory to hold all the packaged versions
       fs.ensureDirSync("package");
       // Initialize the zip file
-      const zipName = `${manifest.name}-v${manifest.version}.zip`;
+      const zipName = `${manifest.name}.zip`;
       const zipFile = fs.createWriteStream(path.join("package", zipName));
       const zip = archiver("zip", { zlib: { level: 9 } });
       zipFile.on("close", () => {
