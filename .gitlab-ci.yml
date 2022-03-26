@@ -57,6 +57,7 @@ build:
     - export
     - npm i
     - npx gulp --series setManifestFromCI packidge
+    - ll
     # - node update-build-tags.js --branch=$CI_COMMIT_BRANCH --gitlabpath=$CI_PROJECT_PATH --jobname=$CI_JOB_NAME  --tag=$CI_COMMIT_TAG
   artifacts:
     paths:
