@@ -133,6 +133,7 @@ const stripInitialv = (subject) => (
  */
 export async function setManifestFromCI () {
   const tag = process.env.CI_COMMIT_TAG;
+  const branch = process.env.CI_COMMIT_BRANCH;
   const path = process.env.CI_PROJECT_PATH;
   const jobName = process.env.CI_JOB_NAME;
 
@@ -142,11 +143,13 @@ export async function setManifestFromCI () {
   }
   
   const version = tag ? stripInitialv(tag) : manifest.version;
+  const ref = tag ? tag : branch ? branch : "main";
   
   manifest.version = version
   manifest.url = `https://gitlab.com/${path}`;
-  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${version}/raw/package/${manifest.name}-v1.0.0.zip?job=${jobName}`;
-  manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${version}/raw/system.json?job=${jobName}`;
+  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${main}/raw/package/${manifest.name}-v1.0.0.zip?job=${jobName}`;
+  //                   https://gitlab.com/asacolips-projects/foundry-mods/archmage/-/raw/master/system.json
+  manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/system.json?job=${jobName}`;
 
   console.log({tag, path, jobName, version, manifest});
   
