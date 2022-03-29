@@ -133,7 +133,7 @@ const stripInitialv = (subject) => (
  */
 export async function setManifestFromCI () {
   const tag = process.env.CI_COMMIT_TAG;
-  // const branch = process.env.CI_COMMIT_BRANCH;
+  const branch = process.env.CI_COMMIT_BRANCH;
   const path = process.env.CI_PROJECT_PATH;
   const jobName = process.env.CI_JOB_NAME;
 
@@ -143,15 +143,14 @@ export async function setManifestFromCI () {
   }
   
   const version = tag ? stripInitialv(tag) : manifest.version;
-  // const ref = tag ? tag : branch ? branch : "main";
+  const ref = tag ? tag : branch ? branch : "main";
   
   manifest.version = version
-  manifest.url = `https://gitlab.com/${path}`;
-  // manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/package/${manifest.name}.zip?job=${jobName}`;
+  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/package/${manifest.name}.zip?job=${jobName}`;
+  // we not set manifest, cos that knackers the update kerjiggery
   // manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/${manifestPath}?job=${jobName}`;
 
-  console.log({tag, path, jobName, version, manifest});
-  
+  console.log({tag, branch, path, jobName, version, manifest});
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 }
 

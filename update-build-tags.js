@@ -1,3 +1,5 @@
+// nicked from archmage
+
 const yargs = require('yargs');
 const fs = require('fs');
 

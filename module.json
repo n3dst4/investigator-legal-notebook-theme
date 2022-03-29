@@ -9,7 +9,7 @@
     "legal-notebook-theme.js"
   ],
   "url": "https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt",
-  "download": "https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt/-/jobs/artifacts/main/raw/package/investigator-fvtt-theme-legal-notebook.zip?job=build",
-  "manifest": "https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt/-/raw/main/module.json"
+  "download": "https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt/-/jobs/artifacts/release/raw/package/investigator-fvtt-theme-legal-notebook.zip?job=build",
+  "manifest": "https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt/-/jobs/artifacts/release/raw/module.json?job=build"
 }
 
