@@ -56,7 +56,7 @@ build:
   script:
     - export
     - npm i
-    - npx gulp setManifestFromCI
+    - npx gulp updateManifestFromCITagPush
     - npx gulp packidge
     - ls -l
     - ls -l package

@@ -131,26 +131,18 @@ const stripInitialv = (subject) => (
 /**
  * Update the manifest in CI
  */
-export async function setManifestFromCI () {
+export async function updateManifestFromCITagPush () {
   const tag = process.env.CI_COMMIT_TAG;
-  const branch = process.env.CI_COMMIT_BRANCH;
   const path = process.env.CI_PROJECT_PATH;
   const jobName = process.env.CI_JOB_NAME;
-
-  if (!path) {
-    console.log(chalk.green("Not on CI, leaving manfest as-is"));
-    return;
+  if (!tag) {
+    throw new Error(`This task should only be run from a CI tag push, but $CI_COMMIT_TAG was empty or undefined`);
   }
-  
-  const version = tag ? stripInitialv(tag) : manifest.version;
-  const ref = tag ? tag : branch ? branch : "main";
-  
-  manifest.version = version
-  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/package/${manifest.name}.zip?job=${jobName}`;
-  // we not set manifest, cos that knackers the update kerjiggery
-  // manifest.manifest = `https://gitlab.com/${path}/-/jobs/artifacts/${ref}/raw/${manifestPath}?job=${jobName}`;
-
-  console.log({tag, branch, path, jobName, version, manifest});
+  if (stripInitialv(tag) !== manifest.version) {
+    throw new Error(`Manifest version (${manifest.version}) does not match tag (${tag})`);
+  }
+  manifest.download = `https://gitlab.com/${path}/-/jobs/artifacts/${tag}/raw/package/${manifest.name}.zip?job=${jobName}`;
+  console.log({tag, path, jobName, manifest});
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 }
 
