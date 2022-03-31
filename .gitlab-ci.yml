@@ -44,8 +44,8 @@ deploy:
   script:
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_LATEST_MANIFEST}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_VERSION_MANIFEST}"'
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${package/ZIP_FILE_NAME} "${PACKAGE_LATEST_DOWNLOAD}"'
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${package/ZIP_FILE_NAME} "${PACKAGE_VERSION_DOWNLOAD}"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_LATEST_DOWNLOAD}"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_VERSION_DOWNLOAD}"'
   release:
     tag_name: '$CI_COMMIT_TAG'
     ref: '$CI_COMMIT_TAG'

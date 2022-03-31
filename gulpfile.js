@@ -156,7 +156,7 @@ export async function bundlePackage () {
       // Ensure there is a directory to hold all the packaged versions
       fs.ensureDirSync("package");
       // Initialize the zip file
-      const zipName = `${manifest.name}.zip`;
+      const zipName = process.env.ZIP_FILE_NAME;
       const zipFile = fs.createWriteStream(path.join("package", zipName));
       const zip = archiver("zip", { zlib: { level: 9 } });
       zipFile.on("close", () => {
