@@ -133,16 +133,15 @@ const stripInitialv = (subject) => (
  */
 export async function updateManifestFromCITagPush () {
   const tag = process.env.CI_COMMIT_TAG;
-  // const path = process.env.CI_PROJECT_PATH;
-  // const jobName = process.env.CI_JOB_NAME;
+  const path = process.env.CI_PROJECT_PATH;
   if (!tag) {
     throw new Error(`This task should only be run from a CI tag push, but $CI_COMMIT_TAG was empty or undefined`);
   }
   if (stripInitialv(tag) !== manifest.version) {
     throw new Error(`Manifest version (${manifest.version}) does not match tag (${tag})`);
   }
-  manifest.download = process.env.PACKAGE_VERSION_DOWNLOAD;
-  // console.log({tag, path, jobName, manifest});
+  manifest.download =  `https://gitlab.com/${path}/packages/generic/${manifest.name}/${tag}/${process.env.ZIP_FILE_NAME}`;
+  console.log({tag, path, manifest});
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 }
 
