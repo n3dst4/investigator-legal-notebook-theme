@@ -1,55 +1,28 @@
+# XXX consider using alpine and apk add'ing curl?
 image: node:16
 
 # before_script:
 #   - apt-get update
 #   - apt-get install zip
 
+variables:
+  PACKAGE_NAME: "${CI_PROJECT_NAME}"
+  MANIFEST_NAME: "module.json"
+  ZIP_FILE_NAME: "${PACKAGE_NAME}-${CI_COMMIT_TAG}.zip"
+  PACKAGE_BASE: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PACKAGE_NAME}"
+  PACKAGE_LATEST_BASE: "${PACKAGE_BASE/latest"
+  PACKAGE_VERSION_BASE: "${PACKAGE_BASE/${CI_COMMIT_TAG}"
+  PACKAGE_LATEST_MANIFEST: "${PACKAGE_LATEST_BASE}/${MANIFEST_NAME}"
+  PACKAGE_LATEST_DOWNLOAD: "${PACKAGE_LATEST_BASE}/${ZIP_FILE_NAME}"
+  PACKAGE_VERSION_MANIFEST: "${PACKAGE_VERSION_BASE}/${MANIFEST_NAME}"
+  PACKAGE_VERSION_DOWNLOAD: "${PACKAGE_VERSION_BASE}/${ZIP_FILE_NAME}"
+
+# "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PACKAGE_NAME}/latest/module.json"
+
 cache:
   paths:
     - node_modules/
 
-# test-build:
-#   stage: test
-#   script:
-#     - export
-#     - npm ci
-#     - npm run build
-
-# build-beta:
-#   stage: build
-#   script:
-#     - export
-#     - npm ci
-#     - npm run build
-#     - node update-build-tags.js --branch=$CI_COMMIT_BRANCH --gitlabpath=$CI_PROJECT_PATH --jobname=$CI_JOB_NAME --versionpre=$CI_PIPELINE_IID
-#     - mkdir archmage
-#     - cp -r ./{system.json,template.json,assets,condition-maps,css,dist,images,languages,licenses,module,release-notes,scripts,templates} ./archmage
-#     - mkdir ./archmage/packs; cp -r ./packs/dist ./archmage/packs/dist
-#     - zip -q archmage.zip -r archmage
-#   artifacts:
-#     paths:
-#       - archmage.zip
-#       - system.json
-#   only:
-#     - beta
-
-# build-prod:
-#   stage: build
-#   script:
-#     - export
-#     - npm ci
-#     - npm run build
-#     - node update-build-tags.js --branch=$CI_COMMIT_BRANCH --gitlabpath=$CI_PROJECT_PATH --jobname=$CI_JOB_NAME  --tag=$CI_COMMIT_TAG
-#     - mkdir archmage
-#     - cp -r ./{system.json,template.json,assets,condition-maps,css,dist,images,languages,licenses,module,release-notes,scripts,templates} ./archmage
-#     - mkdir ./archmage/packs; cp -r ./packs/dist ./archmage/packs/dist
-#     - zip -q archmage.zip -r archmage
-#   artifacts:
-#     paths:
-#       - archmage.zip
-#       - system.json
-#   only:
-#     - tags
 
 build:
   stage: build
@@ -60,10 +33,31 @@ build:
     - npx gulp packidge
     - ls -l
     - ls -l package
-    # - node update-build-tags.js --branch=$CI_COMMIT_BRANCH --gitlabpath=$CI_PROJECT_PATH --jobname=$CI_JOB_NAME  --tag=$CI_COMMIT_TAG
   artifacts:
     paths:
       - package
       - module.json
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
+
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  script: |
+    curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_LATEST_MANIFEST}"
+    curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_VERSION_MANIFEST}"
+    curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${package/ZIP_FILE_NAME} "${PACKAGE_LATEST_DOWNLOAD}"
+    curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${package/ZIP_FILE_NAME} "${PACKAGE_VERSION_DOWNLOAD}"
+
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    ref: '$CI_COMMIT_TAG'
+    description: "**Installation:** To manually install this release, please use the following manifest URL: ${PACKAGE_VERSION_MANIFEST}"
+    assets:
+      links:
+        # links the release to the system manifest from this CI workflow
+        - name: ${MANIFEST_NAME}
+          url: ${PACKAGE_VERSION_MANIFEST}
+        # links the release to the zip file from this CI workflow
+        - name: '$ZIP_FILE_NAME'
+          url: ${PACKAGE_VERSION_DOWNLOAD}

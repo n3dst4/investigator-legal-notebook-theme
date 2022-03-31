@@ -10,6 +10,6 @@
   ],
   "url": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme",
   "download": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme/-/jobs/artifacts/release/raw/package/investigator-legal-notebook-theme.zip?job=build",
-  "manifest": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme/-/jobs/artifacts/release/raw/module.json?job=build"
+  "manifest": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme/packages/generic/investigator-legal-notebook-theme/latest/module.json"
 }
 
