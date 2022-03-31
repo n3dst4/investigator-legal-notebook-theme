@@ -1,10 +1,6 @@
 # XXX consider using alpine and apk add'ing curl?
 image: node:16
 
-# before_script:
-#   - apt-get update
-#   - apt-get install zip
-
 variables:
   PACKAGE_NAME: "${CI_PROJECT_NAME}"
   MANIFEST_NAME: "module.json"
@@ -17,7 +13,9 @@ variables:
   PACKAGE_VERSION_MANIFEST: "${PACKAGE_VERSION_BASE}/${MANIFEST_NAME}"
   PACKAGE_VERSION_DOWNLOAD: "${PACKAGE_VERSION_BASE}/${ZIP_FILE_NAME}"
 
-# "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PACKAGE_NAME}/latest/module.json"
+stages:
+  - build
+  - deploy
 
 cache:
   paths:
