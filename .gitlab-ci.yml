@@ -46,10 +46,21 @@ deploy:
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_VERSION_MANIFEST}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_LATEST_DOWNLOAD}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_VERSION_DOWNLOAD}"'
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
+
+
+release:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo 'Creating release'
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
   release:
     tag_name: '$CI_COMMIT_TAG'
     ref: '$CI_COMMIT_TAG'
-    description: "**Installation:** To manually install this release, please use the following manifest URL: ${PACKAGE_VERSION_MANIFEST}"
+    description: '**Installation:** To manually install this release, please use the following manifest URL: https://gitlab.com/$CI_PROJECT_PATH/-/releases/$CI_COMMIT_TAG/downloads/${MANIFEST_NAME}'
     assets:
       links:
         # links the release to the system manifest from this CI workflow
@@ -58,5 +69,3 @@ deploy:
         # links the release to the zip file from this CI workflow
         - name: '$ZIP_FILE_NAME'
           url: ${PACKAGE_VERSION_DOWNLOAD}
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
