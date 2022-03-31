@@ -60,7 +60,7 @@ release:
   release:
     tag_name: '$CI_COMMIT_TAG'
     ref: '$CI_COMMIT_TAG'
-    description: '**Installation:** To manually install this release, please use the following manifest URL: https://gitlab.com/$CI_PROJECT_PATH/-/releases/$CI_COMMIT_TAG/downloads/${MANIFEST_NAME}'
+    description: '**Installation:** To manually install this release, please use the following manifest URL: ${PACKAGE_VERSION_MANIFEST}'
     assets:
       links:
         # links the release to the system manifest from this CI workflow
