@@ -3,12 +3,12 @@
   "title": "Legal Notebook theme for INVESTIGATOR",
   "description": "Legal notebook theme for INVESTIGATOR for Foundry VTT",
   "author": "Neil de Carteret",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "minimumCoreVersion": "9.0.0",
   "compatibleVersion": "9",
   "esmodules": [ "legal-notebook-theme.js" ],
   "url": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme",
-  "download": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme/packages/generic/investigator-legal-notebook-theme/latest/investigator-legal-notebook-theme.zip",
-  "manifest": "https://gitlab.com/n3dst4/investigator-legal-notebook-theme/packages/generic/investigator-legal-notebook-theme/latest/module.json"
+  "manifest": "https://gitlab.com/api/v4/projects/n3dst4%2Finvestigator-legal-notebook-theme/packages/generic/investigator-legal-notebook-theme/latest/module.json",
+  "download": "https://gitlab.com/api/v4/projects/n3dst4%2Finvestigator-legal-notebook-theme/packages/generic/investigator-legal-notebook-theme/latest/investigator-legal-notebook-theme.zip"
 }
 
