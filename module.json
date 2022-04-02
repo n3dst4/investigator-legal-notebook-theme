@@ -3,7 +3,7 @@
   "title": "Legal Notebook theme for INVESTIGATOR",
   "description": "Legal notebook theme for INVESTIGATOR for Foundry VTT",
   "author": "Neil de Carteret",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "minimumCoreVersion": "9.0.0",
   "compatibleVersion": "9",
   "esmodules": [ "legal-notebook-theme.js" ],
