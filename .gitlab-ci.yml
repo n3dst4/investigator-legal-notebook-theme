@@ -32,6 +32,7 @@ build:
     - ls -l
     - ls -l package
   artifacts:
+    expire_in: 1 week
     paths:
       - package
       - module.json
