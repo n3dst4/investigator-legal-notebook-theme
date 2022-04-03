@@ -1,6 +1,7 @@
 import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
+import manifest from "../module.json";
 
-const assetPath = "modules/investigator-fvtt-theme-legal-notebook/assets"
+const assetPath = `modules/${(manifest as {name: string}).name}/assets`;
 
 const seed: ThemeSeedV1 = {
     schemaVersion: "v1",

@@ -10,6 +10,7 @@
       "@league-of-foundry-developers/foundry-vtt-types",
       "@lumphammer/investigator-fvtt-types"
     ],
-    "lib": ["DOM", "ES2021"]
+    "lib": ["DOM", "ES2021"],
+    "resolveJsonModule": true
   }
 }
