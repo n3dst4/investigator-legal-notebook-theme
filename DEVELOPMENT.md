@@ -11,7 +11,7 @@ A release is carried out by:
 3. Commit & push.
 4. Create & push a tag which matches the version number with a lower-case "v" in front of it. E.g. if the version is `1.2.3`, the tag should be `v1.2.3`.
 
-What then happens is, the tag matches a regex, which triggers a series of jobs.
+What then happens is, the tag matches a regex, which triggers a series of GitLab CI jobs:
 
 * **build** checks that the version in the manifest matches the version in the tag, sets the `download` in the manifest to a versioned GitLab package URL, and kicks off a build.
 * **upload** uploads the package to GitLab Packages, under the version and also as "latest". It *also* uploads the manifest, also versioned and `latest`.

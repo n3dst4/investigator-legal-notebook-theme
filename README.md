@@ -12,7 +12,7 @@ Although this is a fully usable theme, the main intent here is to be an example 
 You can install using the following manifest URL. From the admin page of your Foundry VTT server, go to "Add-on Modules", then "Install Module", and paste this into the "Manifest URL" box and click "Install".
 
 ```
-https://gitlab.com/n3dst4/legal-notebook-theme-for-investigator-for-fvtt/-/raw/main/module.json
+https://gitlab.com/n3dst4/investigator-legal-notebook-theme/-/raw/main/module.json
 ```
 
 
