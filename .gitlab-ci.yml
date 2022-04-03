@@ -45,8 +45,8 @@ upload:
   stage: upload
   image: curlimages/curl:latest
   script:
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_{PATH} "${PACKAGE_LATEST_MANIFEST}"'
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_{PATH} "${PACKAGE_VERSION_MANIFEST}"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_PATH} "${PACKAGE_LATEST_MANIFEST}"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_PATH} "${PACKAGE_VERSION_MANIFEST}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_LATEST_DOWNLOAD}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_VERSION_DOWNLOAD}"'
   rules:
