@@ -4,6 +4,7 @@ image: node:16
 variables:
   PACKAGE_NAME: "${CI_PROJECT_NAME}"
   MANIFEST_NAME: "module.json"
+  MANIFEST_PATH: "src/${MANIFEST_NAME}"
   ZIP_FILE_NAME: "${PACKAGE_NAME}.zip"
   PACKAGE_BASE: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PACKAGE_NAME}"
   PACKAGE_LATEST_BASE: "${PACKAGE_BASE}/latest"
@@ -36,7 +37,7 @@ build:
     expire_in: 1 week
     paths:
       - package
-      - module.json
+      - $MANIFEST_PATH
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
 
@@ -44,8 +45,8 @@ upload:
   stage: upload
   image: curlimages/curl:latest
   script:
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_LATEST_MANIFEST}"'
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_NAME} "${PACKAGE_VERSION_MANIFEST}"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_{PATH} "${PACKAGE_LATEST_MANIFEST}"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${MANIFEST_{PATH} "${PACKAGE_VERSION_MANIFEST}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_LATEST_DOWNLOAD}"'
     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file package/${ZIP_FILE_NAME} "${PACKAGE_VERSION_DOWNLOAD}"'
   rules:

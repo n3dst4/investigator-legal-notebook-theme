@@ -10,10 +10,12 @@ import {fileURLToPath} from "url";
 ////////////////////////////////////////////////////////////////////////////////
 // Config
 
-const manifestPath = "module.json"
+const manifestName = "module.json"
+const srcPath = "src";
+const manifestPath = path.join(srcPath, manifestName);
 const buildFolder = "build";
 const staticPaths = [
-  manifestPath,
+  manifestName,
   "assets"
 ];
 
@@ -65,7 +67,7 @@ export function buildCode () {
 export async function copyFiles () {
   for (const staticPath of staticPaths) {
     await fs.copy(
-      staticPath,
+      path.join("src", staticPath),
       path.join("build", staticPath),
     );
   }
@@ -77,7 +79,7 @@ export async function copyFiles () {
  */
 export function watch () {
   gulp.watch(
-    staticPaths,
+    staticPaths.map(x => path.join("src", x)),
     { ignoreInitial: false },
     copyFiles,
   );
@@ -155,7 +157,7 @@ export async function bundlePackage () {
       // Ensure there is a directory to hold all the packaged versions
       fs.ensureDirSync("package");
       // Initialize the zip file
-      const zipName = process.env.ZIP_FILE_NAME;
+      const zipName = process.env.ZIP_FILE_NAME ?? `${manifest.name}.zip`;
       const zipFile = fs.createWriteStream(path.join("package", zipName));
       const zip = archiver("zip", { zlib: { level: 9 } });
       zipFile.on("close", () => {

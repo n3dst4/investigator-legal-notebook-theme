@@ -4,7 +4,7 @@ A theme for [INVESTIGATOR][investigator], a [GUMSHOE SRD][gumshoe] compatible sy
 
 Although this is a fully usable theme, the main intent here is to be an example of how to create a new theme in TypeScript. Themes for INVESTIGATOR are defined in code, but if you know CSS you'll see how it works.
 
-<img src="./assets/legal_screenshot.webp" style="width: 36em"/>
+<img src="./src/assets/legal_screenshot.webp" style="width: 36em"/>
 
 
 ## How to install

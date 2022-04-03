@@ -1,5 +1,5 @@
 import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
-import manifest from "../module.json";
+import manifest from "./module.json";
 
 const assetPath = `modules/${(manifest as {name: string}).name}/assets`;
 
