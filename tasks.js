@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
@@ -8,7 +10,6 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { exec }from "child_process";
 import chokidar from "chokidar";
-import globWithCallback from "glob";
 
 ////////////////////////////////////////////////////////////////////////////////
 // Config
@@ -24,6 +25,20 @@ const tsGlobPattern = `${srcPath}/**/*.ts?(x)`;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Startup
+// logging function
+const log = console.log.bind(console, chalk.green("[task] "));
+const error = console.log.bind(console, chalk.red("[error] "));
+
+// if subject is a semver string beginning with a v, remove the v
+const stripInitialv = (subject) =>
+  subject.replace(/^v(\d+\.\d+\.\d+.*)/i, (_, ...[match]) => match);
+
+// given a path in the src folder, map it to the equivalent build folder path
+function srcToBuild (inPath) {
+  const outPath = path.join(buildPath, path.relative(srcPath, inPath));
+  return outPath;
+}
+
 const manifestPath = path.join(srcPath, manifestName);
 const manifest = JSON.parse((await fs.readFile(manifestPath)).toString());
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -40,34 +55,6 @@ if (config?.dataPath) {
 
 /// ////////////////////////////////////////////////////////////////////////////
 // Utilities
-
-// promisified version of glob
-function glob (pattern, options) {
-  return new Promise((resolve, reject) => {
-    globWithCallback(pattern, options, (err, files) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(files);
-      }
-    });
-  });
-}
-
-// logging function
-const log = console.log.bind(console, chalk.green("[task] "));
-// const error = console.log.bind(console, chalk.red("[error] "));
-
-// if subject is a semver string beginning with a v, remove the v
-const stripInitialv = (subject) =>
-  subject.replace(/^v(\d+\.\d+\.\d+.*)/i, (_, ...[match]) => match);
-
-// given a path in the src folder, map it to the equivalent build folder path
-function srcToBuild (inPath) {
-  const outPath = path.join(buildPath, path.relative(srcPath, inPath));
-  return outPath;
-}
-
 
 /**
  * Remove built files from `build` folder
@@ -96,17 +83,23 @@ async function clean () {
  * Build TypeScript
  */
 async function buildCode () {
+  log("Building code...");
   await new Promise((resolve, reject) => {
-    exec("tsc", (error, stdout, stderr) => {
-      log(`stdout: ${stdout}`);
-      error(`stderr: ${stderr}`);
-      if (error) {
-        reject(error);
+    exec("tsc", (err, stdout, stderr) => {
+      if (stdout) {
+        log(stdout);
+      }
+      if (stderr) {
+        error(stderr);
+      }
+      if (err) {
+        reject(err);
       } else {
         resolve();
       }
     });
   })
+  log("Finished building code.")
 }
 
 
@@ -128,16 +121,17 @@ async function copyFiles (paths) {
 /**
  * Watch for changes for each build step
  */
-export function watch () {
+async function watch () {
+  await copyFiles();
+  await buildCode();
   chokidar
     .watch(staticPaths.map((x) => path.join(srcPath, x)), { ignoreInitial: true })
     .on("add", (path) => copyFiles([path]))
     .on("change", (path) => copyFiles([path]));
-  const tsFiles = await glob(tsGlobPattern);
   chokidar
-    .watch(tsFiles, { ignoreInitial: true })
-    .on("add", () => buildCode)
-    .on("change", () => buildCode);
+    .watch([tsGlobPattern], { ignoreInitial: true })
+    .on("add", buildCode)
+    .on("change", buildCode);
 }
 
 
@@ -224,7 +218,7 @@ function setProd () {
 
 async function build () {
   await clean();
-  await Promise.all([buildCode, copyFiles]);
+  await Promise.all([buildCode(), copyFiles()]);
 } 
 
 async function packidge () {
@@ -282,6 +276,12 @@ yargs(hideBin(process.argv))
     "Build-on-chnage mode",
     () => {},
     () => watch(),
+  )
+  .command(
+    "copyFiles",
+    "Copy static assets",
+    () => {},
+    () => copyFiles(),
   )
   .command(
     "updateManifestFromCITagPush",

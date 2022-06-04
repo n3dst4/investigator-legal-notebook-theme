@@ -1,5 +1,5 @@
 import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
-
+//////
 const assetPath = `modules/investigator-legal-notebook-theme/assets`;
 
 const seed: ThemeSeedV1 = {
